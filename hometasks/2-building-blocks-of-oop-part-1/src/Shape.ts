@@ -9,7 +9,7 @@ export abstract class Shape {
   constructor(points: Point[]);
   constructor(points: Point[], color: string, filled: boolean);
   constructor(points: Point[], color?: string, filled?: boolean) {
-    if(points?.length && points.length < 3) {
+    if(points.length < 3) {
       throw new Error('Not enough points');
     }
     this.color = color || 'green';

@@ -24,35 +24,26 @@ export class Triangle extends Shape {
     }
 
     public toString(): string {
-        let objString = `Triangle[`
-        this.points.map( (point, index, arr) => {
-            objString = objString + `v${index+1}=(${point.getX}, ${point.getY})`;
-            if(index < arr.length - 1) {
-                objString += ',';
-            } else {
-                objString += ']';
-            }
-        });
-
-        return objString;
+        const points = this.points
+            .map((point, index) => `v${index+1}=${point}`)
+            .join(',');
+        return `Triangle[${points}]`;
     }
 
     public getType(): string {
-        
-        const equalityLimit = 0.01;
-        const side1 = this.points[0].distance(this.points[1]);
-        const side2 = this.points[1].distance(this.points[2]);
-        const side3 = this.points[2].distance(this.points[0]);
-        
-        let equals = 0;
-        equals += Math.abs(side1 - side2) < equalityLimit ? 1 : 0;
-        equals += Math.abs(side1 - side3) < equalityLimit ? 1 : 0;
-        equals += Math.abs(side2 - side3) < equalityLimit ? 1 : 0;
 
-        return equals == 3
-            ? 'equilateral triangle'
-            : equals == 1
+        const uniqueSides = this.points.reduce((acc, point, index)=> {
+            const next = (index + 1) % this.points.length;
+            const nextPoint = this.points[next];
+         
+            const side = point.distance(nextPoint).toFixed(2);
+            return acc.add(side);
+         }, new Set<string>());
+
+        if(uniqueSides.size === 1) return 'equilateral triangle';
+
+        return uniqueSides.size === 2
             ? 'isosceles triangle'
-            : 'scalene triangle'
+            : 'scalene triangle';
     }
 }
