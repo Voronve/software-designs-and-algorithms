@@ -1,28 +1,32 @@
 export interface Shipper {
-    charge: number,
+    letterCharge: number,
+    packageCharge: number,
     getCost(weight: number): number
 }
 
 export class AirEastShipper implements Shipper {
-    charge = 39;
-    
+    public letterCharge = 0.39;
+    public packageCharge = 0.25;
+
     public getCost(weight: number): number {
-        return weight * this.charge;
+        return this.packageCharge * weight + 10;
     }
 }
 
 export class PacificParserShipper implements Shipper {
-    charge = 51;
-    
+    public letterCharge = 0.51;
+    public packageCharge = 0.19;
+
     public getCost(weight: number): number {
-        return weight * this.charge;
+        return (this.packageCharge + 0.02) * weight;
     }
 }
 
 export class ChicagoSprintShipper implements Shipper {
-    charge = 42;
-    
+    public letterCharge = 0.42;
+    public packageCharge = 0.20;
+
     public getCost(weight: number): number {
-        return weight * this.charge;
+        return 0;
     }
 }

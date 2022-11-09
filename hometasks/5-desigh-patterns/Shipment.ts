@@ -1,5 +1,10 @@
 import { Shipper } from './Shipper';
 
+export enum PackageType {
+    letter = 15,
+    package = 160
+};
+
 export class Shipment {
     private static shipmentID: number = 0;
     protected shipmentID: number
@@ -35,7 +40,17 @@ export class Shipment {
     }
 
     public getCost(): number {
-        return this.weight * 39;
+        switch (true) {
+            case this.weight <= PackageType.letter :
+
+                return this.weight * this.shippingStrategy.letterCharge;
+            case this.weight <= PackageType.package :
+
+                return this.weight * this.shippingStrategy.packageCharge;
+            default:
+
+                return this.shippingStrategy.getCost(this.weight);
+        }
     }
 
     public ship(): string {
@@ -45,7 +60,7 @@ export class Shipment {
             Id: ${this.shipmentID}\n
             Sender: ${this.fromAddress}\n
             Resiever: ${this.toAddress}\n
-            Cost: ${this.shippingStrategy.getCost(this.weight)}
+            Cost: ${this.getCost()}
         `
     }
 }

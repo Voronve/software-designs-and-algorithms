@@ -33,8 +33,7 @@ export class Client {
             default:
                 shipment.setStrategy(new AirEastShipper());
         }
-            
-            console.log(shipment.ship());
+
         console.log(shipment.ship());
     }
 }
