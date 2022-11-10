@@ -1,14 +1,9 @@
-import { Shipper } from './Shipper';
+import {Shipment, PackageType, Shipper} from './types';
 
-export enum PackageType {
-    letter = 15,
-    package = 160
-};
-
-export class Shipment {
+export class BaseShipment implements Shipment {
     private static shipmentID: number = 0;
-    protected shipmentID: number
-    protected weight: number
+    public shipmentID: number
+    public weight: number
     public fromAddress: string
     public fromZipCode: string
     public toAddress: string
@@ -31,15 +26,15 @@ export class Shipment {
         this.toZipCode = toZipCode; 
     }
 
-    public getShipmentID(): number {
-        return ++Shipment.shipmentID;
+    private getShipmentID(): number {
+        return ++BaseShipment.shipmentID;
     }
 
-    public setStrategy(strategy: Shipper) {
+    public setStrategy(strategy: Shipper): void {
         this.shippingStrategy = strategy;
     }
 
-    public getCost(): number {
+    private getCost(): number {
         switch (true) {
             case this.weight <= PackageType.letter :
 
@@ -60,7 +55,7 @@ export class Shipment {
             Id: ${this.shipmentID}\n
             Sender: ${this.fromAddress}\n
             Resiever: ${this.toAddress}\n
-            Cost: ${this.getCost()}
+            Cost: ${this.getCost()}\n
         `
     }
 }

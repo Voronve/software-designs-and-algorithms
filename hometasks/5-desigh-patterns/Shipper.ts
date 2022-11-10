@@ -1,8 +1,4 @@
-export interface Shipper {
-    letterCharge: number,
-    packageCharge: number,
-    getCost(weight: number): number
-}
+import { Shipper } from './types';
 
 export class AirEastShipper implements Shipper {
     public letterCharge = 0.39;

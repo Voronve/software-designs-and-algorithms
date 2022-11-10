@@ -1,23 +1,25 @@
-import { Shipment } from "./Shipment";
+import { Shipment, Marks } from "./types";
+import { ShipmentDecorator } from "./ShipmentDecorator";
 import { AirEastShipper, PacificParserShipper, ChicagoSprintShipper } from "./Shipper";
 
 export class Client {
-
     public createShipment (
         shipmentID: number,
         weight: number,
         fromAddress: string,
         fromZipCode: string,
         toAddress: string,
-        toZipCode: string
+        toZipCode: string,
+        marks: Marks
     ): void {
-        const shipment = new Shipment(
+        const shipment: Shipment = new ShipmentDecorator(
             shipmentID,
             weight,
             fromAddress,
             fromZipCode,
             toAddress,
-            toZipCode);
+            toZipCode,
+            marks);
 
         switch( fromZipCode[0] ) {
             case '4':
