@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "outDir": "build",
+    "target": "es2020",
+    "module": "es2015",
+    "moduleResolution": "node",
+    "declaration": false,
+    "allowJs": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitReturns": true,
+    "lib": ["DOM", "ES2020"],
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true
+  },
+  "include": ["src/**/*"],
+  "exclude": [
+    "**/node_modules/**/*",
+    "node_modules",
+    "./node_modules/*"
+  ]
+}
