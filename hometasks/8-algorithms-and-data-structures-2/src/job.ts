@@ -1,9 +1,3 @@
-function delay(miliseconds: number) {
-    return new Promise((ok) => {
-        setTimeout(ok, miliseconds);
-    });
-}
-
 export class Job {
     public order: number;
 
