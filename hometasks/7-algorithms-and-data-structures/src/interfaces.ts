@@ -1,5 +1,5 @@
 export interface Ivertex {
-    value: string
+    name: string
 }
 
 export interface Iedge {
