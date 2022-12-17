@@ -2,7 +2,7 @@ import { Consumable } from './Consumable';
 
 export class Pizza extends Consumable {
     private numberOfSlices: number;
-    private slicesEaten: number = 0;
+    private slicesEaten: number;
 
     constructor(
         name: string,
@@ -14,6 +14,7 @@ export class Pizza extends Consumable {
         super(name, value, weight, spoiled);
 
         this.numberOfSlices = numberOfSlices;
+        this.slicesEaten = 0;
     }
 
     public eat(): string {

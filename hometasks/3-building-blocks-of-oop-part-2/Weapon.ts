@@ -1,11 +1,11 @@
 import {Item} from './Item';
 
 export abstract class Weapon extends Item {
-    public MODIFIER_CHANGE_RATE: number = 0.05;
+    public static MODIFIER_CHANGE_RATE: number;
     protected baseDamage: number;
     protected baseDurability: number;
-    protected damageModifier: number = 0;
-    protected durabilityModifier: number = 0;
+    protected damageModifier: number;
+    protected durabilityModifier: number;
 
     constructor(
         name: string,
@@ -15,16 +15,19 @@ export abstract class Weapon extends Item {
         weight: number) {
             super(name, value, weight);
 
-            this.baseDamage = baseDamage;
-            this.baseDurability = baseDurability;
+            Weapon.MODIFIER_CHANGE_RATE = 0.05;
+            this.baseDamage = Number(baseDamage.toFixed(2));
+            this.baseDurability = Number(baseDurability.toFixed(2));
+            this.damageModifier = 0;
+            this.durabilityModifier = 0;
     }
 
     public get getDamage() {
-        return +(this.baseDamage + this.damageModifier).toFixed(2);
+        return this.baseDamage + this.damageModifier;
     }
 
     public get getDurability() {
-        return +((this.baseDurability + this.durabilityModifier) * 100).toFixed(2);
+        return this.baseDurability + this.durabilityModifier;
     }
 
     public toString(): string {
@@ -37,15 +40,11 @@ export abstract class Weapon extends Item {
             return `You can't use the ${this.name}, it is broken.`;
         }
         
-        let response = `You use the ${this.name}, dealing ${this.getDamage} points of damage.`;
+        const successMessage = `You use the ${this.name}, dealing ${this.getDamage} points of damage.`;
 
-        this.durabilityModifier -= this.MODIFIER_CHANGE_RATE;
-
-        if( this.getDurability <= 0 ) {
-            response += ' The hammer breaks.';
-        }
-
-        return response;
+        return this.getDurability > 0 
+            ? successMessage 
+            : `${successMessage}\nThe ${this.name} breaks.`;
     }
 
     public abstract polish(): void;
