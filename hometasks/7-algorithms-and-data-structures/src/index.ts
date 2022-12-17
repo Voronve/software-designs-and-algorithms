@@ -1,4 +1,4 @@
-import { Vertex, Edge, WeightedGraph } from './classes.js';
+import { Vertex, Edge, WeightedGraph } from './classes';
 
 const vertices = [
     new Vertex('A'),
