@@ -1,23 +1,20 @@
-export interface VertexInt {
+export interface Ivertex {
     value: string
 }
 
-export interface EdgeInt {
-    firstVertex: VertexInt,
-    secondVertex: VertexInt,
+export interface Iedge {
+    firstVertex: Ivertex,
+    secondVertex: Ivertex,
     weight: number
 }
 
-export interface WeightedGraphInt {
-    addVertex(vertex: VertexInt): void;
-    addEdge(firstVertex: VertexInt, secondVertex: VertexInt , weight: number): void;
+export interface IweightedGraph {
+    addVertex(vertex: Ivertex): void;
+    addEdge(firstVertex: Ivertex, secondVertex: Ivertex , weight: number): void;
 }
 
-export interface GraphMapInt {
-    [type: string]: {
-        vertex: string,
-        visited: boolean,
-        path: string[], 
-        weigth: number 
-    }}
-
+export interface GraphData {
+    vertex: string,
+    previous: string,
+    weigth: number
+}

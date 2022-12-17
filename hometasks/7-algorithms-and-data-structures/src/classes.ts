@@ -1,7 +1,6 @@
-import { Type } from 'typescript';
-import { VertexInt, EdgeInt, WeightedGraphInt, GraphMapInt } from './interfaces';
+import { Ivertex, Iedge, IweightedGraph, GraphData } from './interfaces';
 
-export class Vertex implements VertexInt {
+export class Vertex implements Ivertex {
     value: string;
 
     constructor(value: string) {
@@ -9,9 +8,9 @@ export class Vertex implements VertexInt {
     }
 }
 
-export class Edge implements EdgeInt {
-    firstVertex: VertexInt;
-    secondVertex: VertexInt;
+export class Edge implements Iedge {
+    firstVertex: Ivertex;
+    secondVertex: Ivertex;
     weight: number;
 
     constructor(vertex1: Vertex, vertex2: Vertex, weight: number) {
@@ -21,16 +20,24 @@ export class Edge implements EdgeInt {
     }
 }
 
-export class WeightedGraph implements WeightedGraphInt {
-    vertexes: {
+export class WeightedGraph implements IweightedGraph {
+    private readonly vertexes: {
         [key: string]: {
             [key: string]: number
         }
-    } = {};
+    };
+
+    private readonly visited: Map<string, boolean>;
+
+    constructor() {
+        this.vertexes = {};
+        this.visited = new Map<string, boolean>();
+    }
 
     public addVertex(vertex: Vertex) {
         if(!this.vertexes[vertex.value]) {
             this.vertexes[vertex.value] = {};
+            this.visited.set(vertex.value, false);
         }
         
     }
@@ -44,90 +51,103 @@ export class WeightedGraph implements WeightedGraphInt {
         this.vertexes[secondVertex.value][firstVertex.value] = weight;
     }
 
-    private initGraphMap(): GraphMapInt {
-        const graphMap: GraphMapInt = {};
+    private initData(startValue: string): {
+        graphMap: Record<string, GraphData>,
+        unvisited: Set<string>
+    } {
+        const graphMap: Record<string, GraphData> = {};
+        const unvisited = new Set<string>();
 
         Object.keys(this.vertexes).forEach( key => {
             graphMap[key] = {
                 vertex: key,
-                visited: false,
-                path: [],
+                previous: '',
                 weigth: Infinity
             }
+            unvisited.add(key);
         });
+        graphMap[startValue].weigth = 0;
+        unvisited.delete(startValue);
 
-        return graphMap;
+        return { graphMap, unvisited };
     }
 
-    private findCheapestWeight(graphMap: GraphMapInt, visitedVertex: string ) {
+    private findCheapestWeight(
+        graphMap: Record<string, GraphData>,
+        visitedVertex: string,
+        unvisited: Set<string> ) {
 
-        graphMap[visitedVertex].visited = true;
-        const filteredVertexes = this.filterVisited(graphMap);
+        unvisited.delete(visitedVertex);
+
+        if(!unvisited.size) return null;
         
-        this.updatePathes(graphMap, visitedVertex);
-
-        if(!filteredVertexes.length) return null;
-
-        return filteredVertexes.sort(
+        return Array.from(unvisited).sort(
             (vertex1, vertex2) => graphMap[vertex1].weigth - graphMap[vertex2].weigth)[0][0];
     }
 
-
-    private filterVisited(graphMap: GraphMapInt){
-        return Object.entries(graphMap)
-            .filter( entry => !entry[1].visited)
-            .map( entry => entry[0]);
-    }
-
-    private updatePathes(graphMap: GraphMapInt, visitedVertex: string): void {
+    private updatePathes(graphMap: Record<string, GraphData>, visitedVertex: string): void {
 
         Object.entries(this.vertexes[visitedVertex]).forEach( vertex => {
             const newWeigth = vertex[1] + graphMap[visitedVertex].weigth;
             if (graphMap[vertex[0]].weigth > newWeigth) {
-
-                const newPath = [...graphMap[visitedVertex].path];
-                newPath.push(vertex[0]);
-
+                graphMap[vertex[0]].previous = visitedVertex;
                 graphMap[vertex[0]].weigth = newWeigth;
-                graphMap[vertex[0]].path = newPath;
             }
         })
+    }
+
+    private getPath(
+        graphMap: Record<string, GraphData>,
+        finishVertex: string,
+        path: string[] = []): string[] {
+
+        path.unshift(graphMap[finishVertex].vertex);
+
+        if(graphMap[finishVertex].previous) {
+            this.getPath(graphMap, graphMap[finishVertex].previous, path);
+        }
+
+        return path;
     }
 
     public findShortestPath( start: Vertex, finish: Vertex ) {
         if (!this.vertexes[start.value] || !this.vertexes[finish.value]) return `Such vertex is not exist!`;
 
-        const graphMap: GraphMapInt = this.initGraphMap();
-        graphMap[start.value].path.push(start.value);
-        graphMap[start.value].weigth = 0;
+        const {graphMap, unvisited} = this.initData(start.value);
 
-        let cheepest = this.findCheapestWeight(graphMap, start.value);
-        
+        this.updatePathes(graphMap, start.value);
+        let cheepest = this.findCheapestWeight(graphMap, start.value, unvisited);
+
         while(cheepest && cheepest[0] !== finish.value) {
-            cheepest = this.findCheapestWeight(graphMap, cheepest);
+            this.updatePathes(graphMap, cheepest);
+            cheepest = this.findCheapestWeight(graphMap, cheepest, unvisited);
         }
 
-        if(!cheepest) return { path: [], distance: Infinity }
+        if(!cheepest) return { path: [], distance: Infinity };
+
+        const path = this.getPath(graphMap, finish.value);
         
-        return { path: graphMap[cheepest].path, distance: graphMap[cheepest].weigth }
+        return { path, distance: graphMap[cheepest].weigth }
     }
 
     public findAllShortestPaths(vertex: Vertex) {
-        if (!this.vertexes[vertex.value]) return `Such vertex is not exist!`;
+        const vertexName = vertex.value;
+        if (!this.vertexes[vertexName]) return `Such vertex is not exist!`;
 
-        const graphMap: GraphMapInt = this.initGraphMap();
-        graphMap[vertex.value].path.push(vertex.value);
-        graphMap[vertex.value].weigth = 0;
+        const {graphMap, unvisited} = this.initData(vertexName);
 
-        let cheepest = this.findCheapestWeight(graphMap, vertex.value);
+        this.updatePathes(graphMap, vertexName);
+        let cheepest = this.findCheapestWeight(graphMap, vertexName, unvisited);
 
         while(cheepest) {
-            cheepest = this.findCheapestWeight(graphMap, cheepest);
+            this.updatePathes(graphMap, cheepest);
+            cheepest = this.findCheapestWeight(graphMap, cheepest, unvisited);
         }
 
         const results: { [type: string]: { path: string[], distance: number } }= {};
-
-        Object.values(graphMap).map(value => results[value.vertex] = { path: value.path, distance: value.weigth });
+        Object.values(graphMap).map(value => results[value.vertex] = {
+            path: this.getPath(graphMap, value.vertex),
+            distance: value.weigth });
 
         return results;
     }

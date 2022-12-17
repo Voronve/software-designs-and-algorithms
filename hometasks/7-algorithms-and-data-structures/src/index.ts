@@ -1,4 +1,4 @@
-import { Vertex, Edge, WeightedGraph } from './classes.js';
+import { Vertex, Edge, WeightedGraph } from './classes';
 
 const vertices = [
     new Vertex('A'),
@@ -30,4 +30,4 @@ const vertices = [
 
   console.log(graph.findShortestPath(vertices[0], vertices[5]));
 
-  console.log(graph.findAllShortestPaths(vertices[1]));
+  console.log(graph.findAllShortestPaths(vertices[0]));
