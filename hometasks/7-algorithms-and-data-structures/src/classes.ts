@@ -27,17 +27,13 @@ export class WeightedGraph implements IweightedGraph {
         }
     };
 
-    private readonly visited: Map<string, boolean>;
-
     constructor() {
         this.vertexes = {};
-        this.visited = new Map<string, boolean>();
     }
 
     public addVertex(vertex: Vertex) {
         if(!this.vertexes[vertex.value]) {
             this.vertexes[vertex.value] = {};
-            this.visited.set(vertex.value, false);
         }
         
     }
@@ -74,10 +70,7 @@ export class WeightedGraph implements IweightedGraph {
 
     private findCheapestWeight(
         graphMap: Record<string, GraphData>,
-        visitedVertex: string,
         unvisited: Set<string> ) {
-
-        unvisited.delete(visitedVertex);
 
         if(!unvisited.size) return null;
         
@@ -116,11 +109,12 @@ export class WeightedGraph implements IweightedGraph {
         const {graphMap, unvisited} = this.initData(start.value);
 
         this.updatePathes(graphMap, start.value);
-        let cheepest = this.findCheapestWeight(graphMap, start.value, unvisited);
+        let cheepest = this.findCheapestWeight(graphMap, unvisited);
 
         while(cheepest && cheepest[0] !== finish.value) {
+            unvisited.delete(cheepest);
             this.updatePathes(graphMap, cheepest);
-            cheepest = this.findCheapestWeight(graphMap, cheepest, unvisited);
+            cheepest = this.findCheapestWeight(graphMap, unvisited);
         }
 
         if(!cheepest) return { path: [], distance: Infinity };
@@ -137,11 +131,12 @@ export class WeightedGraph implements IweightedGraph {
         const {graphMap, unvisited} = this.initData(vertexName);
 
         this.updatePathes(graphMap, vertexName);
-        let cheepest = this.findCheapestWeight(graphMap, vertexName, unvisited);
+        let cheepest = this.findCheapestWeight(graphMap, unvisited);
 
         while(cheepest) {
+            unvisited.delete(cheepest);
             this.updatePathes(graphMap, cheepest);
-            cheepest = this.findCheapestWeight(graphMap, cheepest, unvisited);
+            cheepest = this.findCheapestWeight(graphMap, unvisited);
         }
 
         const results: { [type: string]: { path: string[], distance: number } }= {};
