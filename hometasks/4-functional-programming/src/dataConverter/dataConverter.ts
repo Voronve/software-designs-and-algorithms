@@ -19,7 +19,6 @@ export const convertUserData = (users: User[] = []) => {
                 posts = account?.posts ?? 0;
                 lastPayments = getLatestPayments(account);
                 
-
                 return {
                     name: name,
                     username,
