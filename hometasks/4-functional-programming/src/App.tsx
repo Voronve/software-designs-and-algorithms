@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { useState, useEffect } from 'react';
 import { StyledEngineProvider } from '@mui/material/styles';
-
+import { getDisplayData } from './utils';
 import { Image, User, Account } from '../types';
 import { Table, Filters, Filter,  Sort, SortType, Search, Row } from './components';
 import { getImages, getUsers, getAccounts } from './mocks/api';
@@ -14,11 +14,9 @@ import styles from './App.module.scss';
 export const App: FC = () => {
   const [data, setData] = useState<Row[]>([]);
   const [filters, setFilters] = useState<Filter[]>([]);
-  const [ sort, setSort ] = useState<SortType>(undefined);
+  const [ sort, setSort ] = useState<SortType>(SortType.asc);
   const [ keyword, setKeyword ] = useState<string>('');
-  let filteredData: Row[] = [];
   let sortedData: Row[] = [];
-  let foundData: Row[] = [];
 
   useEffect(() => {
     // fetching data from API
@@ -32,19 +30,7 @@ export const App: FC = () => {
     });
   }, []);
 
-  if( !filters.length && !keyword ) {
-    sortedData = sortData(data, sort);
-  } else {
-    filteredData = filterData(data, filters);
-    foundData = searchData(data, keyword);
-
-    foundData.forEach(foundRow => {
-      if(!filteredData.some(filterRow => filterRow.username === foundRow.username)) {
-        filteredData.push(foundRow);
-      }
-    })
-    sortedData = sortData(filteredData, sort);
-  }
+  const displayData = getDisplayData(data, sort, filters, keyword);
   
   return (
     <StyledEngineProvider injectFirst>
@@ -56,7 +42,7 @@ export const App: FC = () => {
           </div>
           <Search value={keyword} onClick={setKeyword}/>
         </div>
-        <Table rows={sortedData} />
+        <Table rows={displayData} />
       </div>
     </StyledEngineProvider>
   );

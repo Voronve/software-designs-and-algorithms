@@ -14,7 +14,7 @@ interface FiltersProps {
   onClick?: (filters: Filter[]) => void;
 }
 
-export const matchers: Record<Filter, (row: Row) =>boolean> = {
+export const MATCHERS: Record<Filter, (row: Row) =>boolean> = {
   [Filter.zeroPosts]: ( data: Row) => !data.posts,
   [Filter.manyPosts]: ( data: Row) => data.posts > 100
 }
@@ -25,7 +25,7 @@ export const Filters: FC<FiltersProps> = props => {
   const onChange = (filter: Filter) => {
     let updatedFilters: Filter[];
 
-    if (props.value.indexOf(filter) >= 0) {
+    if (props.value.includes(filter)) {
       updatedFilters = props.value.filter(activeFilter => activeFilter !== filter);
     } else {
       updatedFilters = [...props.value, filter];
@@ -44,7 +44,7 @@ export const Filters: FC<FiltersProps> = props => {
             onClick={() => onChange(filter)}
           >
             <Checkbox
-              checked={!!props.value.find(activeFilter => activeFilter === filter)}
+              checked={props.value.includes(filter)}
               value={filter}
               size="small"
               color="primary"

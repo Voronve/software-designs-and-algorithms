@@ -1,10 +1,12 @@
-export interface Image {
-  userID: string;
+export interface UserConnection {
+  userID: string
+}
+
+export interface Image extends UserConnection {
   url: string;
 }
 
-export interface User {
-  userID: string;
+export interface User extends UserConnection {
   username: string;
   country: string;
   name: string;
@@ -15,8 +17,7 @@ export interface Payment {
   date: string;
 }
 
-export interface Account {
-  userID: string;
+export interface Account extends UserConnection {
   posts: number;
   payments: Payment[];
 }
