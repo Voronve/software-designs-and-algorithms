@@ -1,7 +1,6 @@
 import {Shipment, PackageType, Shipper} from './types';
 
 export class BaseShipment implements Shipment {
-    private static shipmentID: number = 0;
     public shipmentID: number
     public weight: number
     public fromAddress: string
@@ -18,7 +17,7 @@ export class BaseShipment implements Shipment {
         toAddress: string,
         toZipCode: string
     ) {
-        this.shipmentID = shipmentID;
+        this.shipmentID = shipmentID ?? MockedPersistance.getId();
         this.weight = weight;
         this.fromAddress = fromAddress;
         this.fromZipCode = fromZipCode;
@@ -26,30 +25,16 @@ export class BaseShipment implements Shipment {
         this.toZipCode = toZipCode; 
     }
 
-    private getShipmentID(): number {
-        return ++BaseShipment.shipmentID;
-    }
-
     public setStrategy(strategy: Shipper): void {
         this.shippingStrategy = strategy;
     }
 
     private getCost(): number {
-        switch (true) {
-            case this.weight <= PackageType.letter :
-
-                return this.weight * this.shippingStrategy.letterCharge;
-            case this.weight <= PackageType.package :
-
-                return this.weight * this.shippingStrategy.packageCharge;
-            default:
-
-                return this.shippingStrategy.getCost(this.weight);
-        }
+        
+        return this.shippingStrategy.getCost(this.weight);
     }
 
     public ship(): string {
-        this.shipmentID = this.shipmentID ?? this.getShipmentID();
 
         return `
             Id: ${this.shipmentID}\n
@@ -57,6 +42,14 @@ export class BaseShipment implements Shipment {
             Resiever: ${this.toAddress}\n
             Cost: ${this.getCost()}\n
         `
+    }
+}
+
+class MockedPersistance {
+    private static lastId = 0;
+ 
+    public static getId () {
+       return ++this.lastId;
     }
 }
 

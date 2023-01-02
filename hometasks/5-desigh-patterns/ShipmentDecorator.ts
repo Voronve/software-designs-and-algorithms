@@ -26,11 +26,9 @@ export class ShipmentDecorator implements Shipment {
     }
 
     private getMarks(marks: Marks): string {
-        let marksString = '';
-        for (const value of Object.values(marks)) {
-            marksString += `**MARK ${(value as string).toUpperCase()}**\n`;
-          }
-          return marksString;
+
+        return Object.values(marks)
+           .reduce((acc, current) => `${acc}\n**MARK ${(current as string).toUpperCase()}**`, '')
     }
 
     public setStrategy(strategy: Shipper): void {
